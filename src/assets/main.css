@@ -406,6 +406,36 @@ background: transparent !important;
 /* ==========================================================================
    10. TXARTELAK (Tarjetas genéricas para listas)
    ========================================================================== */
+
+.zerrenda-goiburua {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 15px; 
+}
+
+.zerrenda-goiburua .azpititulua {
+    margin-bottom: 0; 
+}
+
+.zerrenda-goiburua select{
+    padding: 10px 15px;
+    border: 2px solid var(--color-borde);
+    border-radius: var(--borde-radio);
+    font-size: 1rem;
+    color: var(--color-texto);
+    background-color: white;
+    cursor: pointer;
+    transition: var(--transicion);
+    outline: none;
+    font-weight: 600;
+}
+
+.zerrenda-goiburua select:focus {
+    border-color: var(--color-granate);
+    box-shadow: 0 0 0 3px rgba(134, 18, 59, 0.1);
+}
+
 .txartela-item {
     background-color: white;
     border: 1px solid #e0e0e0;
@@ -430,6 +460,23 @@ background: transparent !important;
     gap: 8px;
 }
 
+.txartela-data {
+    margin: 0;
+    color: #666;
+    font-size: 0.85rem;
+}
+
+.txartela-xehetasuna p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.txartela-nabarmendua {
+    margin: 5px 0 0 0;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ca5980; 
+}
 /* ==========================================================================
    11. BOTOI TXIKIAK (Iconos de editar/borrar)
    ========================================================================== */

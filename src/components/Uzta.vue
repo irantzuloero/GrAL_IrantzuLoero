@@ -196,11 +196,11 @@
                     
                     <div class="txartela-item" v-for="bidaia in aurtengoBidaiak" :key="bidaia.id">
                         <div class="txartela-info-blokea">
-                            <div class="bidaia-info">
-                                <p class="bidaia-data">{{ bidaia.data }}</p>
-                                <p class="bidaia-kg">{{ bidaia.kiloak }} <span>kg</span></p>
+                            <div class="txartela-info">
+                                <p class="txartela-data">{{ bidaia.data }}</p>
+                                <p class="txartela-nabarmendua">{{ bidaia.kiloak }} <span>kg</span></p>
                             </div>
-                            <div class="bidaia-puntuazioa">
+                            <div class="txartela-xehetasuna">
                                 <p>Puntuazioa: <strong>{{ bidaia.puntuazioa }}</strong></p>
                             </div>
                         </div>
@@ -226,11 +226,11 @@
                         
                         <div class="txartela-item" v-for="urteko in urtekoDatuak" :key="urteko.urtea">
                             <div class="txartela-info-blokea">
-                                <div class="bidaia-info">
-                                    <p class="bidaia-data">{{ urteko.urtea }}</p>
-                                    <p class="bidaia-kg">{{ urteko.kiloak }} <span>kg</span></p>
+                                <div class="txartela-info">
+                                    <p class="txartela-data">{{ urteko.urtea }}</p>
+                                    <p class="txartela-nabarmendua">{{ urteko.kiloak }} <span>kg</span></p>
                                 </div>
-                                <div class="bidaia-puntuazioa">
+                                <div class="txartela-xehetasuna">
                                     <p>Puntuazioa: <strong>{{ urteko.puntuazioa }}</strong></p>
                                 </div>
                             </div>
@@ -290,16 +290,6 @@
 </template>
 
 <style scoped>
-.zerrenda-goiburua {
-    display: flex;
-    justify-content: space-between; /* Empuja el h3 a la izquierda y el botón a la derecha */
-    align-items: center; /* Los alinea verticalmente para que queden rectos */
-    margin-bottom: 15px; /* Deja un poco de aire antes de la lista */
-}
-
-.zerrenda-goiburua .azpititulua {
-    margin-bottom: 0; 
-}
 
 /* RESUMEN (Cajas arriba) */
 .estatistikak-kutxa {
@@ -334,23 +324,6 @@
     font-weight: normal;
 }
 
-.bidaia-data {
-    margin: 0;
-    color: #666;
-    font-size: 0.85rem;
-}
-
-.bidaia-kg {
-    margin: 5px 0 0 0;
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #ca5980; 
-}
-
-.bidaia-puntuazioa p {
-    margin: 0;
-    font-size: 0.9rem;
-}
 /* ==========================================================================
    DIÁLOGO EMERGENTE (MODAL)
    ========================================================================== */

@@ -2,6 +2,8 @@
     import { ref, computed, onMounted } from 'vue';
     import { db, auth } from '../firebase.js'; 
     import { query, where, getDocs, doc, updateDoc, collection, addDoc, deleteDoc } from 'firebase/firestore'; 
+    import jsPDF from 'jspdf';
+    import autoTable from 'jspdf-autotable';
 
     const info = defineProps(['datuak']);
     const emit = defineEmits(['itzuli']);
@@ -107,6 +109,38 @@
         }
     }
 
+    function deskargatuPDF() {
+        const doc = new jsPDF();
+
+        doc.setFontSize(16);
+        doc.text(`Mahastiaren Tratamenduak - ${tratamenduUrte.value} Kanpaina`, 14, 15);
+        
+        doc.setFontSize(11);
+        doc.setTextColor(100);
+
+        const erreferentzia = info.datuak.erreferentzia || info.datuak.izena || info.datuak.id; 
+        doc.text(`Mahasti erreferentzia: ${erreferentzia}`, 14, 22);
+
+        const taulaDatuak = aurtengoTratamenduak.value.map(t => {
+            return [
+                t.data, 
+                t.izena, 
+                `${t.kantitatea} kg`
+            ];
+        });
+
+        // ¡Aquí está el cambio clave!
+        autoTable(doc, {
+            head: [['Data / Fecha', 'Tratamendua', 'Kantitatea']],
+            body: taulaDatuak,
+            startY: 25, 
+            theme: 'striped', 
+            // Ponemos el color en Hexadecimal porque jsPDF no lee CSS
+            headStyles: { fillColor: '#86123b' } 
+        });
+
+        doc.save(`Tratamenduak_${tratamenduUrte.value}.pdf`);
+    }
     onMounted( async() => {
         await kargatuTratamenduak();
     });
@@ -117,11 +151,17 @@
 
         <div class="bidaiak-zerrenda">
             <div class="zerrenda-goiburua">
-                <select v-model="tratamenduUrte">
-                    <option v-for="urtea in urteenZerrenda" :key="urtea" :value="urtea">
-                        {{ urtea }}
-                    </option>
-                </select>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <select class="select-filtroa" v-model="tratamenduUrte" style="padding: 8px; border-radius: 8px; border: 2px solid #e0e0e0; outline: none; font-weight: bold; cursor: pointer;">
+                        <option v-for="urtea in urteenZerrenda" :key="urtea" :value="urtea">
+                            {{ urtea }}
+                        </option>
+                    </select>
+                    
+                    <button class="btn-ikono" @click="deskargatuPDF()" v-if="aurtengoTratamenduak.length > 0" title="Deskargatu PDF-a">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-down-icon lucide-file-down"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/></svg>
+                    </button>
+                </div>
                 <button class="btn-nagusia" @click="irekiTratamenduModal()">+ Gehitu tratamendua</button>
             </div>
             <div class="zerrenda-scroll">
@@ -131,12 +171,12 @@
                 
                 <div class="txartela-item" v-for="tratamendua in aurtengoTratamenduak" :key="tratamendua.id">
                     <div class="txartela-info-blokea">
-                        <div class="bidaia-info">
-                            <p class="bidaia-data">{{ tratamendua.data }}</p>
-                            <p class="bidaia-kg">{{ tratamendua.izena }} <span>kg</span></p>
+                        <div class="txartela-info">
+                            <p class="txartela-data">{{ tratamendua.data }}</p>
+                            <p class="txartela-nabarmendua">{{ tratamendua.izena }}</p>
                         </div>
-                        <div class="bidaia-puntuazioa">
-                            <p>Puntuazioa: <strong>{{ tratamendua.kantitatea }}</strong></p>
+                        <div class="txartela-xehetasuna">
+                            <p>Kantitatea: <strong>{{ tratamendua.kantitatea }}</strong></p>
                         </div>
                     </div>
                     <div class="txartela-ekintzak">
