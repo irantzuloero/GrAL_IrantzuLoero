@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import { db, auth } from '../firebase.js';
 import DatuakBista from './Datuak.vue';
 import UztaBista from './Uzta.vue';
+import TratamenduakBista from './Tratamenduak.vue';
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import { useRouter, useRoute} from 'vue-router';
 
@@ -60,6 +61,7 @@ onMounted(async () => {
           <span v-if="bistaAktiboa === 'menua'">{{ datuak.izena }}</span>
           <span v-else-if="bistaAktiboa === 'datuak'">Datuak</span>
           <span v-else-if="bistaAktiboa === 'uzta'">Uzta</span>
+          <span v-else-if="bistaAktiboa === 'tratamenduak'">Tratamenduak</span>
         </h1>
         <p class="azpititulua-header">
           <span v-if="bistaAktiboa === 'menua'">Erref: {{ datuak.erreferentzia }}</span>
@@ -87,7 +89,7 @@ onMounted(async () => {
         <span>Uzta</span>
       </div>
 
-      <div class="opzio-item">
+      <div class="opzio-item" @click="bistaAktiboa = 'tratamenduak'" style="cursor: pointer;">
         <div class="borobila-aukera">
           <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-soap-dispenser-droplet-icon lucide-soap-dispenser-droplet"><path d="M10.5 2v4"/><path d="M14 2H7a2 2 0 0 0-2 2"/><path d="M19.29 14.76A6.67 6.67 0 0 1 17 11a6.6 6.6 0 0 1-2.29 3.76c-1.15.92-1.71 2.04-1.71 3.19 0 2.22 1.8 4.05 4 4.05s4-1.83 4-4.05c0-1.16-.57-2.26-1.71-3.19"/><path d="M9.607 21H6a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h7V7a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg>
         </div>
@@ -124,6 +126,12 @@ onMounted(async () => {
 
     <UztaBista 
       v-if="bistaAktiboa === 'uzta'" 
+      :datuak="datuak" 
+      @itzuli="bistaAktiboa = 'menua'" 
+    />
+
+    <TratamenduakBista 
+      v-if="bistaAktiboa === 'tratamenduak'" 
       :datuak="datuak" 
       @itzuli="bistaAktiboa = 'menua'" 
     />
