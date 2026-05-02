@@ -46,7 +46,6 @@ export function partzelakKargatu(pac) {
     
     let url='';
 
-    console.log("tiene pac????" + pac);
     if(erabiltzaileakPacDu){
         url = `https://sigpac-hubcloud.es/ogcapi/collections/cultivo_declarado/items?bbox=${bbox}&parc_producto=102&limit=500&f=json`;
     } else {
@@ -107,9 +106,9 @@ export function partzelakKargatu(pac) {
 
 function sortuErreferentzia(props) {
     if (!props || !props.municipio) return '—';
-    const muni = props.municipio.toString().padStart(2, '0'); // "19"
-    const poli = props.poligono.toString().padStart(2, '0');  // "01"
-    const parc = props.parcela.toString();                    // "2"
+    const muni = props.municipio.toString().padStart(2, '0'); 
+    const poli = props.poligono.toString().padStart(2, '0');  
+    const parc = props.parcela.toString();                    
     return muni + poli + parc;
 }
 
@@ -130,8 +129,9 @@ function konfiguratuGeruza(feature, layer) {
     const props = feature.properties || {};
     const ref = sortuErreferentzia(props);
     
-    const area = props.dn_surface || 0; 
-    
+    const area = props.dn_surface || "-"; 
+    const altitud = props.altitud || "-";
+
     const izenakUdalerriak = {
         "11":"Baños de Ebro", "19": "Kripan", "22":"Elciego", 
         "23": "Elvillar", "28":"Labastida", "31":"Laguardia", 
@@ -146,14 +146,14 @@ function konfiguratuGeruza(feature, layer) {
         const udalerriKodea = props.municipio.toString().padStart(2, '0');
         municipio = izenakUdalerriak[udalerriKodea] || "Ezezaguna";
         poligono = props.poligono.toString();  
-        parcela = props.parcela.toString();      
+        parcela = props.parcela.toString(); 
     }
 
     const mahastiaGordeta = nireMahastiakZerrenda.find(m => m.erref === ref || m.erreferentzia === ref);
     
     let popupHtml = mahastiaGordeta 
         ? sortuPopup('gordeta', mahastiaGordeta) 
-        : sortuPopup('berria', { ref: ref, area: area });
+        : sortuPopup('berria', { ref: ref, area: area, altuera: altitud});
         
     layer.bindPopup(popupHtml);
 
@@ -174,7 +174,7 @@ function konfiguratuGeruza(feature, layer) {
         
         layer.setStyle({ color: '#ffffff', weight: 3, fillOpacity: 0.15, className: 'efecto-neon' }); 
         
-        aukeratutakoa = { erref: ref, udalerria: municipio, poligonoa: poligono, partzela: parcela, azalera: area, geometry: feature.geometry };
+        aukeratutakoa = { erref: ref, udalerria: municipio, poligonoa: poligono, partzela: parcela, azalera: area,altuera:altitud, geometry: feature.geometry };
     });
     
     layer.on('mouseover', () => {
@@ -189,6 +189,7 @@ function konfiguratuGeruza(feature, layer) {
 function sortuPopup(mota, datuak) {
     const ref = datuak.erreferentzia || datuak.ref;
     const azalera = datuak.azalera || datuak.area;
+    const altuera = datuak.altuera;
     
     if (mota === 'gordeta') {
         const datuakJson = JSON.stringify(datuak).replace(/'/g, "&#39;");
@@ -197,6 +198,7 @@ function sortuPopup(mota, datuak) {
                 <h4>${datuak.izena}</h4>
                 <p><b>Erref.:</b> ${ref}</p>
                 <p><b>Azalera:</b> ${azalera} m²</p>
+                <p><b>Altuera:</b> ${altuera} m</p>
                 <button class="btn-popup ikusi btn-ikusi-xehetasunak" data-datos='${datuakJson}'>
                     Ikusi xehetasunak
                 </button>
@@ -207,6 +209,7 @@ function sortuPopup(mota, datuak) {
             <div class="popup">
                 <p><b>Erref.:</b> ${ref}</p>
                 <p><b>Azalera:</b> ${azalera} m²</p>
+                <p><b>Altuera:</b> ${altuera} m</p>
                 <button class="btn-popup gehitu btn-gehitu-mapa" data-ref="${ref}" data-area="${azalera}">
                     + Mahastia gehitu
                 </button>

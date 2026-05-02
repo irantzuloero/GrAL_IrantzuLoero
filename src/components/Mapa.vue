@@ -24,6 +24,7 @@ const formData = ref({
   poligonoa: '',
   partzela: '',
   azalera: '',
+  altuera:'',
   izena: '',
   urtea: '',
   mahatsMota: 'Tempranillo',
@@ -34,11 +35,11 @@ const formData = ref({
 // UDALERRI BILATZAILEA 
 const bilatzailea = ref('');
 const koordenatuak = {
-  "Baños de Ebro": [42.530, -2.679], "Kripan": [42.591, -2.516], "Elciego": [42.517, -2.618],
-  "Elvillar": [42.570, -2.545], "Labastida": [42.588, -2.794], "Laguardia": [42.551, -2.584],
-  "Lanciego": [42.562, -2.512], "Lapuebla de Labarca": [42.495, -2.571], "Leza": [42.566, -2.633],
-  "Moreda de Álava": [42.525, -2.408], "Navaridas": [42.546, -2.623], "Oyón": [42.505, -2.436],
-  "Samaniego": [42.568, -2.679], "Villabuena de Álava": [42.547, -2.665], "Yécora": [42.567, -2.470]
+  "Mañueta / Baños de Ebro": [42.530, -2.679], "Kripan / Cripán": [42.591, -2.516], "Eltziego / Elciego": [42.517, -2.618],
+  "Bilar / Elvillar": [42.570, -2.545], "Bastida / Labastida": [42.588, -2.794], "Guardia / Laguardia": [42.551, -2.584],
+  "Lantziego / Lanciego": [42.562, -2.512], "Lapuebla de Labarca": [42.495, -2.571], "Leza": [42.566, -2.633],
+  "Moreda Araba / Moreda de Álava": [42.525, -2.408], "Navaridas": [42.546, -2.623], "Oion / Oyón": [42.505, -2.436],
+  "Samaniego": [42.568, -2.679], "Eskuernaga / Villabuena de Álava": [42.547, -2.665], "Ekora / Yécora": [42.567, -2.470]
 };
 
 const herriIragaziak = computed(() => {
@@ -50,6 +51,37 @@ const herriIragaziak = computed(() => {
   return Object.keys(koordenatuak).filter(herria => 
     herria.toLowerCase().includes(testua)
   );
+});
+
+// MAHASTI BILATZAILEA 
+const mBilatzailea = ref('');
+const ordenatzekoIrizpidea = ref('izena'); 
+
+const mahastiIragaziak = computed(() => {
+  let emaitza = nireMahastiak.value;
+
+  if (mBilatzailea.value.trim() !== '') {
+    const testua = mBilatzailea.value.toLowerCase();
+    
+    emaitza = emaitza.filter(mahastia => {
+      const izena = (mahastia.izena || '').toLowerCase();
+      const udalerria = (mahastia.udalerria || '').toLowerCase();
+      const erref = (mahastia.erreferentzia || '').toLowerCase();
+      
+      return izena.includes(testua) || udalerria.includes(testua) || erref.includes(testua);
+    });
+  }
+
+  emaitza = emaitza.slice().sort((a, b) => {
+    if (ordenatzekoIrizpidea.value === 'izena') {
+      return (a.izena || '').localeCompare(b.izena || '');
+    } else if (ordenatzekoIrizpidea.value === 'udalerria') {
+      return (a.udalerria || '').localeCompare(b.udalerria || '');
+    }
+    return 0;
+  });
+
+  return emaitza;
 });
 
 async function kargatuDatuakEtaMapa(user) {
@@ -193,7 +225,7 @@ function itxiLehioa() {
 
 function berriaFormularioaIreki(e) {
   const d = e.detail;
-  formData.value = { ...formData.value, erreferentzia: d.erref, udalerria: d.udalerria, poligonoa: d.poligonoa, partzela: d.partzela, azalera: d.azalera, geometry: d.geometry };
+  formData.value = { ...formData.value, erreferentzia: d.erref, udalerria: d.udalerria, poligonoa: d.poligonoa, partzela: d.partzela, azalera: d.azalera, altuera: d.altuera,geometry: d.geometry };
   erakutsiLehioa.value = true;
 }
 
@@ -246,9 +278,14 @@ onMounted(() => {
       <div class="kaxa-zerrenda">
         <div class="tresnak-mahastiak">
           <div class="bilatzaile-txikia">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" v-model="bilaketaTestua" placeholder="Bilatu izena...">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" v-model="mBilatzailea" placeholder="Bilatu izena...">
+            <!-- Hemos borrado la lista desplegable de aquí -->
           </div>
+          
           <select v-model="ordenatzekoIrizpidea" class="select-ordena">
             <option value="izena">A-Z (Izenaren arabera)</option>
             <option value="udalerria">Udalerriaren arabera</option>
@@ -258,8 +295,20 @@ onMounted(() => {
         <ul id="lista-mahastiak">
           <li v-if="kargatzenMahastiak">Kargatzen...</li>
           <li v-else-if="nireMahastiak.length === 0">Ez daukazu mahastirik</li>
-          <li v-for="m in nireMahastiak" :key="m._id" @click="joanMahastira(m); panelaIrekita = false">
+          
+          <!-- AVISO DE BÚSQUEDA VACÍA -->
+          <li v-else-if="mahastiIragaziak.length === 0" style="color: gray; text-align: center;">
+            Ez dago emaitzarik bilaketa horrentzat
+          </li>
+
+          <!-- ¡LA MAGIA OCURRE AQUÍ! Hacemos el v-for sobre mahastiIragaziak -->
+          <li 
+            v-for="m in mahastiIragaziak" 
+            :key="m.id || m._id" 
+            @click="joanMahastira(m); panelaIrekita = false"
+          >
             <strong>{{ m.izena }}</strong><br>
+            <small style="color: gray;">{{ m.udalerria }} - {{ m.erreferentzia }}</small>
           </li>
         </ul>
       </div>
@@ -313,6 +362,7 @@ onMounted(() => {
             <label>Poligonoa:</label><input type="number" v-model="formData.poligonoa" readonly>
             <label>Partzela:</label><input type="number" v-model="formData.partzela" readonly>
             <label>Azalera (m²):</label><input type="text" v-model="formData.azalera" readonly>
+            <label>Altuera:</label><input type="text" v-model="formData.altuera" readonly>
           </div>
           <div class="datu-aldakorrak">
             <label>Mahastiaren izena:</label><input type="text" v-model="formData.izena">

@@ -64,6 +64,10 @@
                 
                 <label>Azalera (m²)</label>
                 <input type="text" v-model="info.datuak.azalera" readonly>
+
+                <label>Altuera:</label>
+                <input type="text" v-model="info.datuak.altuera" readonly>
+
             </div>
             
             <div class="datu-aldakorrak">
