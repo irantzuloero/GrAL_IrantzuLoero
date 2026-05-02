@@ -4,6 +4,7 @@ import { db, auth } from '../firebase.js';
 import DatuakBista from './Datuak.vue';
 import UztaBista from './Uzta.vue';
 import TratamenduakBista from './Tratamenduak.vue';
+import OharrakBista from './Oharrak.vue';
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import { useRouter, useRoute} from 'vue-router';
 
@@ -62,6 +63,7 @@ onMounted(async () => {
           <span v-else-if="bistaAktiboa === 'datuak'">Datuak</span>
           <span v-else-if="bistaAktiboa === 'uzta'">Uzta</span>
           <span v-else-if="bistaAktiboa === 'tratamenduak'">Tratamenduak</span>
+          <span v-else-if="bistaAktiboa === 'oharrak'">Oharrak</span>
         </h1>
         <p class="azpititulua-header">
           <span v-if="bistaAktiboa === 'menua'">Erref: {{ datuak.erreferentzia }}</span>
@@ -96,11 +98,11 @@ onMounted(async () => {
         <span>Tratamenduak</span>
       </div>
 
-      <div class="opzio-item">
+      <div class="opzio-item" @click="bistaAktiboa = 'oharrak'" style="cursor: pointer;">
         <div class="borobila-aukera">
           <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-notebook-pen-icon lucide-notebook-pen"><path d="M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4"/><path d="M2 6h4"/><path d="M2 10h4"/><path d="M2 14h4"/><path d="M2 18h4"/><path d="M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"/></svg>
         </div>
-        <span>Notak</span>
+        <span>Oharrak</span>
       </div>
 
       <div class="opzio-item">
@@ -134,6 +136,12 @@ onMounted(async () => {
       v-if="bistaAktiboa === 'tratamenduak'" 
       :datuak="datuak" 
       @itzuli="bistaAktiboa = 'menua'" 
+    />
+
+    <OharrakBista
+      v-if="bistaAktiboa === 'oharrak'"
+      :datuak="datuak" 
+      @itzuli="bistaAktiboa = 'menua'"
     />
   </div>
   

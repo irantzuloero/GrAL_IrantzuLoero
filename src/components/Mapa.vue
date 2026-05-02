@@ -115,7 +115,7 @@ async function gordeMahastia() {
 async function saioaItxi() {
   try {
     await signOut(auth);
-    router.push('/mapa');
+    router.push('/login');
   } catch (err) {
     console.error('Errorea saioa ixtean', err);
   }

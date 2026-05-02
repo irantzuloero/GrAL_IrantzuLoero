@@ -6,7 +6,6 @@
     import autoTable from 'jspdf-autotable';
 
     const info = defineProps(['datuak']);
-    const emit = defineEmits(['itzuli']);
 
     const erakutsiDialogoa = ref(false);
     const tratamenduaEditatzenId = ref(null);
@@ -129,13 +128,11 @@
             ];
         });
 
-        // ¡Aquí está el cambio clave!
         autoTable(doc, {
             head: [['Data / Fecha', 'Tratamendua', 'Kantitatea']],
             body: taulaDatuak,
             startY: 25, 
             theme: 'striped', 
-            // Ponemos el color en Hexadecimal porque jsPDF no lee CSS
             headStyles: { fillColor: '#86123b' } 
         });
 

@@ -5,7 +5,6 @@
     import apexchart from 'vue3-apexcharts';
 
     const info = defineProps(['datuak']);
-    const emit = defineEmits(['itzuli']);
 
     const erakutsiDialogoa = ref(false);
     const bidaiaEditatzenId = ref(null);

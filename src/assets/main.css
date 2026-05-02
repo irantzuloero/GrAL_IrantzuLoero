@@ -206,11 +206,15 @@ background: transparent !important;
 }
 .lehioa-edukia label:first-child { margin-top: 0; }
 
-.lehioa-edukia input, .lehioa-edukia select { 
+.lehioa-edukia input, .lehioa-edukia select, .lehioa-edukia textarea { 
     width: 100%; padding: 12px 15px; margin-bottom: 10px;
     border: 2px solid var(--color-borde); border-radius: var(--borde-radio); 
     font-size: 1rem; color: var(--color-texto); box-sizing: border-box;
     transition: var(--transicion);
+}
+.lehioa-edukia textarea {
+    resize: vertical; 
+    font-family: inherit;
 }
 
 .lehioa-edukia input[readonly] { 

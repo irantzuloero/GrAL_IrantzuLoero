@@ -75,6 +75,19 @@ async function erregistratu() {
           <input type="password" v-model="pasahitzaBi" required>
         </div>
 
+        <div class="pac-container">
+          <div class="form-group checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" />
+              <span class="toggle-label">PAC sistemako lursailak</span>
+            </label>
+          </div>
+
+          <p class="info-note">
+            <small>ℹ️ <b>Oharra:</b> Aukera honek mapa-mota bat edo bestea (PAC edo normala) bistaratzeko balio du zure lursailak hautatzerakoan.</small>
+          </p>
+        </div>
+
         <div v-if="error" class="error-msg">
           {{ error }}
         </div>
@@ -88,4 +101,37 @@ async function erregistratu() {
     </div>
   </div>
 </template>
+
+<style scoped>
+.pac-container {
+  margin: 15px 0;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+  cursor: pointer; 
+  font-weight: bold;
+  color: #333;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.info-note {
+  margin-top: 10px;
+  margin-bottom: 0;
+  color: #666;
+  font-size: 0.9em;
+  line-height: 1.4;
+}
+</style>
 
