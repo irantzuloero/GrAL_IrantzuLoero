@@ -1,9 +1,9 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { mapaHasieratu, zentratu, eguneratuNireMahastiak, joanMahastira } from '../lib/mapa.js';
+import { mapaHasieratu, zentratu, eguneratuNireMahastiak, joanMahastira, partzelakKargatu } from '../lib/mapa.js';
 
 import { db, auth } from '../firebase.js';
-import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
+import { collection, addDoc, query, where, getDocs, getDoc,doc, getFirestore } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'vue-router';
 
@@ -51,6 +51,13 @@ const herriIragaziak = computed(() => {
     herria.toLowerCase().includes(testua)
   );
 });
+
+async function kargatuDatuakEtaMapa(user) {
+  const db = getFirestore();
+  const userDoc = await getDoc(doc(db, "erabiltzaileak", user.uid)); 
+
+  partzelakKargatu(userDoc.data().pac);
+}
 
 function hautatuHerria(herria) {
   const coords = koordenatuak[herria];
@@ -208,6 +215,7 @@ onMounted(() => {
 
   auth.onAuthStateChanged((user) => {
     if (user) {
+      kargatuDatuakEtaMapa(user);
       kargatuNireMahastiak();
       kargatuMotak();
     }

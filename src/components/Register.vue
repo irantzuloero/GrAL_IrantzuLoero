@@ -10,6 +10,7 @@ const izena = ref('');
 const email = ref('');
 const pasahitza = ref('');
 const pasahitzaBi = ref('');
+const pacAukeratuta = ref(false);
 const error = ref('');
 
 async function erregistratu() {
@@ -31,6 +32,7 @@ async function erregistratu() {
     await setDoc(doc(db, "erabiltzaileak", user.uid), {
       izena: izena.value,
       email: email.value,
+      pac: pacAukeratuta.value,
       rol: 'nekazaria'
     });
 
@@ -78,13 +80,18 @@ async function erregistratu() {
         <div class="pac-container">
           <div class="form-group checkbox-group">
             <label class="checkbox-label">
-              <input type="checkbox" />
+              <input type="checkbox" v-model="pacAukeratuta"/>
               <span class="toggle-label">PAC sistemako lursailak</span>
             </label>
           </div>
 
           <p class="info-note">
-            <small>ℹ️ <b>Oharra:</b> Aukera honek mapa-mota bat edo bestea (PAC edo normala) bistaratzeko balio du zure lursailak hautatzerakoan.</small>
+            <small class="note-content">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info-icon lucide-info">
+                <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+              </svg>
+              <span><b>Oharra:</b> Aukera honek mapa-mota bat edo bestea (PAC edo normala) bistaratzeko balio du zure lursailak hautatzerakoan.</span>
+            </small>
           </p>
         </div>
 
@@ -104,11 +111,12 @@ async function erregistratu() {
 
 <style scoped>
 .pac-container {
-  margin: 15px 0;
-  padding: 15px;
+  margin: 10px 0 10px 0;
+  padding: 10px;
   background-color: #f9f9f9;
   border-radius: 8px;
   border: 1px solid #e0e0e0;
+  text-align: left
 }
 
 .checkbox-label {
@@ -128,10 +136,20 @@ async function erregistratu() {
 
 .info-note {
   margin-top: 10px;
-  margin-bottom: 0;
   color: #666;
   font-size: 0.9em;
   line-height: 1.4;
+}
+
+.note-content {
+  display: flex;
+  align-items: flex-start; 
+  gap: 6px;
+}
+
+.note-content svg {
+  flex-shrink: 0; 
+  margin-top: 2px;
 }
 </style>
 

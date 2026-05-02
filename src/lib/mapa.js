@@ -7,6 +7,7 @@ let etiketak = [];
 let aukeratutakoa = null;
 let nireMahastiakZerrenda = []; 
 let mahastiAukeratua = null;
+let erabiltzaileakPacDu = false;
 
 export function mapaHasieratu(idContenedor) {
     mapa = L.map(idContenedor, {
@@ -18,12 +19,10 @@ export function mapaHasieratu(idContenedor) {
 
     L.tileLayer(
         'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', 
-        { maxZoom: 19, minZoom: 16, attribution: 'Tiles © Esri' }
+        { maxZoom: 19, minZoom: 17, attribution: 'Tiles © Esri' }
     ).addTo(mapa);
 
     mapa.on('moveend', partzelakKargatu);
-
-    partzelakKargatu();
     return mapa;
 }
 
@@ -33,27 +32,71 @@ export function zentratu(lat, lng) {
 
 export function eguneratuNireMahastiak(mahastiak) {
     nireMahastiakZerrenda = mahastiak;
-    partzelakKargatu();
+    partzelakKargatu(erabiltzaileakPacDu);
 }
 
-export function partzelakKargatu() {
+export function partzelakKargatu(pac) {
+    if (typeof pac === 'boolean') {
+        erabiltzaileakPacDu = pac;
+    }
     if(!mapa) return;
     
     const bounds = mapa.getBounds();
     const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()].join(',');
     
-    //SIGPAC API-A
-    const url = `https://sigpac-hubcloud.es/ogcapi/collections/cultivo_declarado/items?bbox=${bbox}&parc_producto=102&limit=500&f=json`;
+    let url='';
+
+    console.log("tiene pac????" + pac);
+    if(erabiltzaileakPacDu){
+        url = `https://sigpac-hubcloud.es/ogcapi/collections/cultivo_declarado/items?bbox=${bbox}&parc_producto=102&limit=500&f=json`;
+    } else {
+        url = `https://sigpac-hubcloud.es/ogcapi/collections/recintos/items?bbox=${bbox}&limit=500&f=json`;
+    }
 
     fetch(url)
         .then(res => res.json())
         .then(data => {
-            if (partzelaGeruza) mapa.removeLayer(partzelaGeruza);
+            // Recintoak kendu
+            const datuakAgrupados = { type: "FeatureCollection", features: [] };
+            const mapaParcelas = {};
+
+            data.features.forEach(feature => {
+                const props = feature.properties || {};
+                if (!props.municipio) return;
+
+                const muni = props.municipio.toString().padStart(2, '0');
+                const poli = props.poligono.toString().padStart(2, '0');
+                const parc = props.parcela.toString();
+                const ref = muni + poli + parc;
+
+                if (!mapaParcelas[ref]) {
+                    mapaParcelas[ref] = {
+                        type: "Feature",
+                        properties: { ...props, dn_surface: props.dn_surface || 0 },
+                        geometry: {
+                            type: "MultiPolygon", 
+                            coordinates: []
+                        }
+                    };
+                    datuakAgrupados.features.push(mapaParcelas[ref]);
+                } else {
+                    // Si ya existía este número de parcela, le SUMAMOS el área del nuevo trozo
+                    mapaParcelas[ref].properties.dn_surface += (props.dn_surface || 0);
+                }
+
+                // Metemos las coordenadas del trozo dentro de la geometría unificada
+                if (feature.geometry.type === "Polygon") {
+                    mapaParcelas[ref].geometry.coordinates.push(feature.geometry.coordinates);
+                } else if (feature.geometry.type === "MultiPolygon") {
+                    mapaParcelas[ref].geometry.coordinates.push(...feature.geometry.coordinates);
+                }
+            });
             
+            if (partzelaGeruza) mapa.removeLayer(partzelaGeruza);
             etiketak.forEach(e => mapa.removeLayer(e));
             etiketak = [];
             
-            partzelaGeruza = L.geoJSON(data, {
+            partzelaGeruza = L.geoJSON(datuakAgrupados, {
                 style: lortuEstiloa,           
                 onEachFeature: konfiguratuGeruza
             }).addTo(mapa);
