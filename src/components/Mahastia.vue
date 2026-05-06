@@ -190,27 +190,6 @@ onMounted(async () => {
   color: #777;
 }
 
-.btn-itzuli-ikonoa {
-  background: #f5f5f5;
-  border: none;
-  color: var(--color-texto);
-  cursor: pointer;
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  margin-left: 30px;
-}
-
-.btn-itzuli-ikonoa:hover {
-  background: var(--color-granate);
-  color: white;
-  transform: translateX(-4px);
-}
-
 .aukerak {
   display: flex;
   flex-direction: column;

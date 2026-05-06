@@ -7,7 +7,10 @@ import { collection, addDoc, query, where, getDocs, getDoc,doc, getFirestore } f
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'vue-router';
 
+import ProfilaBista from './Profila.vue';
+
 const router = useRouter();
+const bistaAktiboa = ref('mapa');
 
 // ALDAGAIAK
 const kargatzenMahastiak = ref(true);
@@ -275,7 +278,7 @@ onMounted(() => {
         </div>
       </div>
 
-      <div class="kaxa-zerrenda">
+      <div class="kaxa-zerrenda" >
         <div class="tresnak-mahastiak">
           <div class="bilatzaile-txikia">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -283,7 +286,6 @@ onMounted(() => {
               <line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
             <input type="text" v-model="mBilatzailea" placeholder="Bilatu izena...">
-            <!-- Hemos borrado la lista desplegable de aquí -->
           </div>
           
           <select v-model="ordenatzekoIrizpidea" class="select-ordena">
@@ -296,12 +298,10 @@ onMounted(() => {
           <li v-if="kargatzenMahastiak">Kargatzen...</li>
           <li v-else-if="nireMahastiak.length === 0">Ez daukazu mahastirik</li>
           
-          <!-- AVISO DE BÚSQUEDA VACÍA -->
           <li v-else-if="mahastiIragaziak.length === 0" style="color: gray; text-align: center;">
             Ez dago emaitzarik bilaketa horrentzat
           </li>
 
-          <!-- ¡LA MAGIA OCURRE AQUÍ! Hacemos el v-for sobre mahastiIragaziak -->
           <li 
             v-for="m in mahastiIragaziak" 
             :key="m.id || m._id" 
@@ -319,7 +319,7 @@ onMounted(() => {
         </button>
       </div>
       <div class="logout-kutxa mt-auto">
-        <button class="btn-menu-lateral">
+        <button class="btn-menu-lateral" @click="bistaAktiboa = 'profila'">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-granate)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           Nire Profila
         </button>
@@ -395,6 +395,13 @@ onMounted(() => {
         </div>
       </div>
     </div>
+  </div>
+
+  <div v-if="bistaAktiboa === 'profila'" class="profila-overlay">
+    <ProfilaBista 
+      @itzuli="bistaAktiboa = 'mapa'" 
+      @aldaketa="partzelakKargatu"
+    />
   </div>
 </template>
 
@@ -750,4 +757,15 @@ onMounted(() => {
   }
 }
 
+.profila-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: white;
+  z-index: 9999; 
+  display: flex;
+
+}
 </style>

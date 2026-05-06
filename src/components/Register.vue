@@ -81,7 +81,7 @@ async function erregistratu() {
           <div class="form-group checkbox-group">
             <label class="checkbox-label">
               <input type="checkbox" v-model="pacAukeratuta"/>
-              <span class="toggle-label">PAC sistemako lursailak</span>
+              <span style="color: #666">PAC sistemako lursailak</span>
             </label>
           </div>
 
@@ -117,21 +117,6 @@ async function erregistratu() {
   border-radius: 8px;
   border: 1px solid #e0e0e0;
   text-align: left
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 10px; 
-  cursor: pointer; 
-  font-weight: bold;
-  color: #333;
-}
-
-.checkbox-label input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
 }
 
 .info-note {
